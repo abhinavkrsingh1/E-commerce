@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const verifyEmail = require("../emailVaerify/verifyEmail");
 const session = require("../database/models/sessionModels");
-const { send } = require("vite");
 const sendOtpMail = require("../emailVaerify/sendOtp.mail");
 
 
@@ -238,6 +237,39 @@ const getUserById= async(req,res)=>{
         
     }
 }
+const updateUser = async (req, res) => {
+    try {
+        const userIdToUpdate = req.params.id;
+        const loggedInUser = req.user;
+        if (loggedInUser.role !== "admin" && loggedInUser._id.toString() !== userIdToUpdate) {
+            return res.status(403).json({ success: false, message: "Forbidden action for non-admin users" });
+        }
+
+        const user = await User.findById(userIdToUpdate);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const { firstName, lastName, email, phoneNo, address, city, zipCode } = req.body;
+
+        // Validate required fields
+        if (!firstName || !lastName || !email || !phoneNo || !address || !city || !zipCode) {
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        const updates = { firstName, lastName, email, phoneNo, address, city, zipCode };
+
+        const updatedUser = await User.findByIdAndUpdate(userIdToUpdate, updates, { new: true, runValidators: true });
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found after update" });
+        }
+
+        return res.status(200).json({ success: true, message: "User updated successfully", user: updatedUser });
+    } catch (error) {
+        console.error("Update user error:", error);
+        return res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    }
+};
 module.exports = {
     register,
     verify,
@@ -248,5 +280,6 @@ module.exports = {
     veriftOtp,
     ChnagePassword,
     allUsers,
-    getUserById
+    getUserById,
+    updateUser
 }
