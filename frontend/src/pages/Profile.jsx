@@ -3,12 +3,13 @@ import React, { useState } from 'react'
     import { Button } from '@/components/ui/button'
     import { Input } from '@/components/ui/input'
     import { Label } from '@/components/ui/label'
-    // import axios from "axios"
-
+// import { useParams } from 'react-router-dom'
 
   
 
     const Profile = () => {
+      // const params = useParams();
+      // const userId = params.userId;
       const [formData,setFormData] = useState({
         firstName:'',
         lastName:'',

@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 const verifyEmail = require("../emailVaerify/verifyEmail");
 const session = require("../database/models/sessionModels");
 const sendOtpMail = require("../emailVaerify/sendOtp.mail");
+const cloudinary = require("../utils/cloudinary");
+const Stream = require("stream");
+const { upload } = require("../middleware/multer");
+
+
 
 
 const register = async(req, res) => {
@@ -241,6 +246,7 @@ const updateUser = async (req, res) => {
     try {
         const userIdToUpdate = req.params.id;
         const loggedInUser = req.user;
+    
         if (loggedInUser.role !== "admin" && loggedInUser._id.toString() !== userIdToUpdate) {
             return res.status(403).json({ success: false, message: "Forbidden action for non-admin users" });
         }
@@ -249,27 +255,41 @@ const updateUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
+        let profilePicUrl = user.profilePic;
+        let profilePicPublicId = user.profilePicPublicId;
 
-        const { firstName, lastName, email, phoneNo, address, city, zipCode } = req.body;
-
-        // Validate required fields
-        if (!firstName || !lastName || !email || !phoneNo || !address || !city || !zipCode) {
-            return res.status(400).json({ success: false, message: "All fields are required" });
+        if (req.file) {
+            if (profilePicPublicId && profilePicUrl) {
+                await cloudinary.uploader.destroy(profilePicPublicId);
+            }
+            const uploadResult = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream({ folder: "profile_pics" }, (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
+                stream.end(req.file.buffer);
+            });
+            profilePicUrl = uploadResult.secure_url;
+            profilePicPublicId = uploadResult.public_id;
         }
 
-        const updates = { firstName, lastName, email, phoneNo, address, city, zipCode };
-
-        const updatedUser = await User.findByIdAndUpdate(userIdToUpdate, updates, { new: true, runValidators: true });
-        if (!updatedUser) {
-            return res.status(404).json({ success: false, message: "User not found after update" });
-        }
-
-        return res.status(200).json({ success: true, message: "User updated successfully", user: updatedUser });
-    } catch (error) {
-        console.error("Update user error:", error);
+        const { firstName, lastName, email, phoneNo, address, city, zipCode, role } = req.body;
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.email = email || user.email;
+        user.phoneNo = phoneNo || user.phoneNo;
+        user.address = address || user.address;
+        user.city = city || user.city;
+        user.zipCode = zipCode || user.zipCode;
+        if (role) user.role = role;
+        user.profilePic = profilePicUrl;
+        user.profilePicPublicId = profilePicPublicId;
+       const updatedUser = await user.save();
+        return res.status(200).json({ success: true, message: "User updated successfully", updatedUser });
+} catch (error) {
         return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
-};
+}
 module.exports = {
     register,
     verify,

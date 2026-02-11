@@ -45,7 +45,7 @@ const Navbar = () => {
           <Link to="/" className="text-pink-700 hover:text-pink-900 font-medium transition">Home</Link>
           <Link to={"/products" }className="text-pink-700 hover:text-pink-900 font-medium transition">Products</Link>
            {
-            user && <Link to="/profile" className="text-pink-700 hover:text-pink-900 font-medium transition">Hello,{user.firstName}</Link>
+            user && <Link to={`/profile/${user._id}`} className="text-pink-700 hover:text-pink-900 font-medium transition">Hello,{user.firstName}</Link>
            }
            <Link to={"/cart"} className="text-pink-700 hover:text-pink-900 font-medium transition relative">
            <ShoppingCart/>
