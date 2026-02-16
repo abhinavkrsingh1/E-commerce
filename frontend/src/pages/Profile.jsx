@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios"
+import { Truck } from "lucide-react";
 
 const Profile = () => {
   const params = useParams();
@@ -37,20 +38,21 @@ const Profile = () => {
     "https://via.placeholder.com/150",
   );
   const now = new Date().toISOString().split("T")[0];
+  const token = localStorage.getItem("accessToken");
 
   const handleImageChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => setProfileImage(event.target.result);
+      reader.onload = (event) => setProfileImage(event.target.result)
       reader.readAsDataURL(file);
     }
   };
-  try {
-    const token = localStorage.getItem("accessToken");
+  useEffect(()=>{
     setLoading(true);
+     try {
     const res = axios.put(
-      `http://localhost:3000/api/users/update/:${userId}`,
+      `http://localhost:3000/api/users/update/${userId}`,
       { formData },
       {
         headers: {
@@ -61,12 +63,20 @@ const Profile = () => {
     );
     if (res.data.success) {
       toast.message(res.data.message);
+      
     }
   } catch (error) {
     console.error("Error updating profile:", error);
     setLoading(false);
-    toast.error(error.res.data.message);
+    toast.error(error.response?.data?.message || "Failed to update profile");
   }
+   finally(){
+    setLoading(false);
+
+  }
+
+  },[handleChange])
+ 
 
   return (
     <div className="pt-20 min-h-screen bg-gray-100 flex items-center justify-center px-4 pb-10">
