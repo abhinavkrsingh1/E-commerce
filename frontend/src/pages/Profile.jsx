@@ -67,10 +67,10 @@ const Profile = () => {
     }
   } catch (error) {
     console.error("Error updating profile:", error);
-    setLoading(false);
+ 
     toast.error(error.response?.data?.message || "Failed to update profile");
   }
-   finally(){
+   finally{
     setLoading(false);
 
   }
@@ -114,7 +114,9 @@ const Profile = () => {
                     className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-6 py-2 rounded-full"
                   >
                     <span>Change Picture</span>
+                    {loading ? <><Loader2 className="h-4 w-4 animate-spin m-2"/></> : setLoading(false)}
                   </Button>
+                 
                 </Label>
                 <input
                   id="image-upload"

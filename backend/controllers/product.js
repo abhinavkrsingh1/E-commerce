@@ -1,5 +1,5 @@
 const Product  = require('../database/models/productSchema')
-const producereg = ('/product',async (req,res)=>{
+const productreg = async (req,res)=>{
     const {name , description,price,category} = req.body;
     if(!name || !description || !price || ! category){
         return res.status(401).json({success:false,message:"All field are required"})
@@ -17,6 +17,18 @@ const producereg = ('/product',async (req,res)=>{
     newPrdosuct.save()
     return res.status(201).json({success:true , message:"All product are created ",product:newPrdosuct})
 
-})
+}
+const getProduct = async (req,res)=>{
+    const userId = req.params.id;
+    const productget = await Product.findOne({userId})
+    if(!productget){
 
-module.exports={producereg,}
+        return res.status(401).json({success:false,message:"product not found"})
+
+    }
+    return res.status(201).json({success:true,message:"product get successfully",productget})
+
+
+}
+
+module.exports={productreg,getProduct}
