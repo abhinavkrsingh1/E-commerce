@@ -20,13 +20,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.use("/api/users", router);
+app.use("/api/users", router)
 app.use('/pro/product',router1)
 
 
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("Hello, World!")
 });
 
 app.listen(PORT, () => {

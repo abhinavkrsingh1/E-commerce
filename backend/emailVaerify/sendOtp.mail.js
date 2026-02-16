@@ -11,12 +11,9 @@ const SendOtpMail=async (otp, email) => {
     }
 });
 const mailConfigurations = {
-
     from: process.env.MAIL_USER,
-
     to:email,
     subject: 'password reset OTP',
-    
     html: `<p>Your OTP for password reset is:<strong>${otp}</strong></p>`
 };
 transporter.sendMail(mailConfigurations, function(error, info){

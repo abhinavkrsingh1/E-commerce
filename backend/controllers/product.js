@@ -22,7 +22,7 @@ const getProduct = async (req,res)=>{
     const userId = req.params.id;
     const productget = await Product.findOne({userId})
     if(!productget){
-
+     
         return res.status(401).json({success:false,message:"product not found"})
 
     }
