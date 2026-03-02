@@ -12,10 +12,13 @@ exports.getCart = async (req,res)=>{
     }
 }
 
-exports.addToCart = async (req,rea)=>{
-    const {productId , quantity} = req.body;
+exports.addToCart = async (req,res)=>{
+    const {productId , quantity} = req?.body;
     try {
-        if(!productId || )
+        if(!productId || !quantity){
+            return res.status(401).json({success:false,message:"All field are required"})
+        }
+        
         
     } catch (error) {
         return res.status(500).json({success:false,message:"Internal server error",error:error.message})
