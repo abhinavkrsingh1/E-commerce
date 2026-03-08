@@ -15,13 +15,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use(cors({
-  origin: "http://localhost:5173", // frontend URL
+  origin: "http://localhost:5173", 
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
 app.use("/api/users", router)
 app.use('/pro/product',router1)
+app.use('/category',require('./controllers/categories'))
 
 
 

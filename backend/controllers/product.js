@@ -24,6 +24,7 @@ const getProduct = async (req,res)=>{
     if(!productget){
      
         return res.status(401).json({success:false,message:"product not found"})
+        
 
     }
     return res.status(201).json({success:true,message:"product get successfully",productget})
