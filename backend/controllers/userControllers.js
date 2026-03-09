@@ -219,8 +219,6 @@ const allUsers = async(_, res) => {
    try {
     const users = await User.find();
     return res.status(200).json({success:true,message: "All users retrieved successfully",users});
-
-    
    } 
    catch (error) {
     return res.status(500).json({success:false,message: "Server Error",error:error.message});   

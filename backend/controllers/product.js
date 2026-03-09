@@ -1,35 +1,34 @@
-const Product  = require('../database/models/productSchema')
-const productreg = async (req,res)=>{
-    const {name , description,price,category} = req.body;
-    if(!name || !description || !price || ! category){
-        return res.status(401).json({success:false,message:"All field are required"})
+const Product = require("../database/models/productSchema")
+const express = require('express');
+const router = express.Router()
+const mongoose = require("mongoose");
+const { Category } = require("../database/models/category");
+
+router.post("/",async (req,res)=>{
+    const category = await Category.findById(req.body.category);
+    if (!category) {
+        return res.status(401).json({ success: false, message: "Invalid category" });
     }
-    const productname = await Product.findOne({name})
-    if(productname){
-        return res.status(401).json({success:true, message:"name already exist "})
+    let product = new Product({
+        name: req.body.name,
+        description: req.body.description,
+        richDescription: req.body.richDescription,
+        image: req.body.image,
+        images: req.body.images,
+        brand: req.body.brand,
+        price: req.body.price,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        numReviews: req.body.numReviews,
+        isFeatured: req.body.isFeatured
+    });
+    product = await product.save();
+    if (!product) {
+        return res.status(401).json({ success: false, message: "Product not found" });
     }
-    const newPrdosuct = await Product.create({
-        name,
-        description,
-        price,
-        category
-    })
-    newPrdosuct.save()
-    return res.status(201).json({success:true , message:"All product are created ",product:newPrdosuct})
+    product = await Product.findById(product._id).populate('category');
+    return res.status(201).json({ success: true, message: "Product created successfully", product });
 
-}
-const getProduct = async (req,res)=>{
-    const userId = req.params.id;
-    const productget = await Product.findOne({userId})
-    if(!productget){
-     
-        return res.status(401).json({success:false,message:"product not found"})
-        
-
-    }
-    return res.status(201).json({success:true,message:"product get successfully",productget})
-
-
-}
-
-module.exports={productreg,getProduct}
+})
+module.exports= router

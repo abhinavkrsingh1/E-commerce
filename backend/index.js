@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 const connectDB = require("./database/db");
 const router = require("./routes/userRoutes");
-const router1 = require("./routes/productRoutes");
 const cors = require("cors");
 
 connectDB();
@@ -21,9 +20,8 @@ app.use(cors({
 }));
 
 app.use("/api/users", router)
-app.use('/pro/product',router1)
-app.use('/category',require('./controllers/categories'))
-
+app.use('/category', require('./controllers/categories'));
+app.use('/product', require('./controllers/product'));
 
 
 app.get("/", (req, res) => {
